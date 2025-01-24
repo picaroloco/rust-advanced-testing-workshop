@@ -5,7 +5,7 @@
 #[cfg(test)]
 mod tests {
     use googletest::assert_that;
-    use googletest::matchers::matches_pattern;
+    use googletest::matchers::{matches_pattern, eq};
 
     #[derive(Debug)]
     enum MyCustomEnum {
@@ -14,22 +14,22 @@ mod tests {
         C { a: &'static str },
     }
 
-    #[googletest::gtest]
+    #[googletest::test]
     fn failed_is_b() {
         let x = MyCustomEnum::A;
         // This will become `assert_matches!` once it stabilises!
-        assert!(matches!(x, MyCustomEnum::B(_)));
+        assert_that!(x, matches_pattern!(MyCustomEnum::B(_)))
     }
 
-    #[googletest::gtest]
+    #[googletest::test]
     fn failed_is_c() {
         let x = MyCustomEnum::B(10);
-        assert!(matches!(x, MyCustomEnum::C { .. }));
+        assert_that!(x, matches_pattern!(MyCustomEnum::C { .. }))
     }
 
-    #[googletest::gtest]
+    #[googletest::test]
     fn failed_is_c_with_value() {
         let x = MyCustomEnum::B(10);
-        assert!(matches!(x, MyCustomEnum::C { a: "hello" }));
+        assert_that!(x, matches_pattern!(MyCustomEnum::C { a: eq(&"hello") }))
     }
 }
