@@ -22,9 +22,9 @@ mod tests {
         assert_empty(v)
     }
 
-    fn assert_empty<T>(v: Vec<T>) {
+    fn assert_empty<T: std::fmt::Debug>(v: Vec<T>) {
         // You should compose the message _directly_ in the assertion.
         // Don't do a `let msg = format!(...)` before the assertion!
-        assert!(v.is_empty(), "TODO")
+        assert!(v.is_empty(), "The vector is not empty, it has {:?} elements", v.len())
     }
 }
