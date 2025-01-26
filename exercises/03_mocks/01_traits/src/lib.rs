@@ -3,10 +3,14 @@
 //! Then pass a `TestLogger` to `square` in the test. `TestLogger` should implement `Logger` and do nothing
 //! when `log` is called.
 
-pub fn square(x: i32, logger: PrintlnLogger) -> i32 {
+pub fn square<L: Logger>(x: i32, logger: &L) -> i32 {
     let y = x * x;
     logger.log(&format!("{}^2 == {}", x, y));
     y
+}
+
+pub trait Logger {
+    fn log(&self, msg: &str);
 }
 
 pub struct PrintlnLogger;
@@ -17,14 +21,27 @@ impl PrintlnLogger {
     }
 }
 
+impl Logger for PrintlnLogger {
+    fn log(&self, msg: &str) {
+        PrintlnLogger::log(self, msg);
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::square;
+    use super::Logger;
     use googletest::assert_that;
     use googletest::matchers::eq;
 
     #[test]
     fn square_works() {
-        assert_eq!(square(2, todo!()), 4);
+        struct TestLogger;
+        impl Logger for TestLogger {
+            fn log(&self, _msg: &str) {
+
+            }
+        }
+        assert_that!(square(2, &TestLogger), eq(4));
     }
 }
